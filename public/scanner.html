@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>THQ Rides - Scan Booking QR</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body style="background-color: black; color: white; text-align: center; font-family: sans-serif;">
+
+  <h1>Scan Booking QR</h1>
+
+  <video id="video" width="300" height="200" style="border: 1px solid white;"></video>
+  <canvas id="canvas" hidden></canvas>
+  <div id="scanResult" style="margin-top: 20px; color: lime;"></div>
+
+  <!-- jsQR library -->
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+
+  <script>
+    const video = document.getElementById('video');
+    const canvasElement = document.getElementById('canvas');
+    const canvas = canvasElement.getContext('2d');
+    const scanResult = document.getElementById('scanResult');
+
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then((stream) => {
+      video.srcObject = stream;
+      video.setAttribute("playsinline", true); // required for iOS
+      video.play();
+      requestAnimationFrame(tick);
+    });
+
+    function tick() {
+      if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        canvasElement.height = video.videoHeight;
+        canvasElement.width = video.videoWidth;
+        canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+        const imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height, {
+          inversionAttempts: "dontInvert",
+        });
+        if (code) {
+          scanResult.innerHTML = `QR Code detected! Redirecting...`;
+          video.srcObject.getTracks().forEach(track => track.stop()); // stop camera
+          setTimeout(() => {
+            window.location.href = code.data; // Redirect to booking page
+          }, 1000);
+          return;
+        }
+      }
+      requestAnimationFrame(tick);
+    }
+  </script>
+</body>
+</html>
