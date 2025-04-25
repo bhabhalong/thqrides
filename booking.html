@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>THQ Rides Booking</title>
+  <style>
+    body { background-color: black; color: white; font-family: sans-serif; text-align: center; padding: 30px; }
+  </style>
+</head>
+<body>
+  <h1>THQ Booking Details</h1>
+  <div id="bookingInfo" style="margin-top: 20px;"></div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const passengerId = urlParams.get('passengerId');
+    const pickup = urlParams.get('pickup');
+    const dropoff = urlParams.get('dropoff');
+    const seats = urlParams.get('seats');
+
+    document.getElementById('bookingInfo').innerHTML = `
+      <p><strong>Passenger ID:</strong> ${passengerId}</p>
+      <p><strong>Pickup:</strong> ${pickup}</p>
+      <p><strong>Drop-off:</strong> ${dropoff}</p>
+      <p><strong>Seats Booked:</strong> ${seats}</p>
+    `;
+  </script>
+</body>
+</html>
