@@ -7,21 +7,41 @@
     body {
       background-color: black;
       color: white;
-      text-align: center;
       font-family: Arial, sans-serif;
-      padding-top: 40px;
+      text-align: center;
+      padding-top: 50px;
     }
-    video {
+    #video {
       width: 80%;
       max-width: 400px;
-      margin-top: 20px;
       border: 2px solid white;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
   <h1>Scan Booking QR</h1>
-  <video muted autoplay></video>
-  <script type="module" src="qrScanner.js"></script>
+  <video id="video"></video>
+
+  <script type="module">
+    import QrScanner from "./qr.js";
+
+    const videoElem = document.getElementById('video');
+    const scanner = new QrScanner(videoElem, result => {
+      console.log("QR Code Result:", result);
+      try {
+        const data = JSON.parse(result);
+        if (data.bookingId && data.passengerId) {
+          window.location.href = `booking.html?bookingId=${data.bookingId}&passengerId=${data.passengerId}`;
+        } else {
+          alert("Invalid QR Code format.");
+        }
+      } catch (e) {
+        alert("Could not read QR Code.");
+      }
+    });
+
+    scanner.start();
+  </script>
 </body>
 </html>
