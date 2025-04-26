@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>THQ Rides</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body style="background-color: black; color: white; text-align: center; font-family: sans-serif;">
+  <h1>Welcome to THQ Rides</h1>
+  <div id="app">
+    <button onclick="loginUser()">Login</button>
+  </div>
+
+  <!-- Booking Form -->
+  <form id="bookingForm" style="margin-top: 30px;">
+    <h3>Book a Ride</h3>
+    <input type="text" id="passengerId" placeholder="Passenger ID (e.g. 7NHJDR...)" required><br><br>
+    <input type="text" id="pickup" placeholder="Pickup Point (e.g. Sandton)" required><br><br>
+    <input type="text" id="dropoff" placeholder="Drop-off Point (e.g. Rosebank)" required><br><br>
+    <input type="number" id="seats" placeholder="Seats to book (e.g. 2)" required><br><br>
+    <button type="submit">Book Ride</button>
+  </form>
+
+  <!-- Passenger Booking Lookup -->
+  <div style="margin-top: 30px;">
+    <input type="text" id="viewPassengerId" placeholder="Enter your Passenger ID to view bookings" />
+    <button id="viewBookingsBtn">View My Bookings</button>
+  </div>
+
+  <!-- QR Code Display -->
+  <div id="qrDisplay" style="margin-top: 40px;">
+    <h4>Booking QR Code:</h4>
+  </div>
+
+  <!-- Booking List Output -->
+  <div id="bookingsList" style="margin-top: 30px;"></div>
+
+  <!-- Firebase JS SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+  <!-- QR Code Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <!-- App Script (must be loaded last) -->
+  <script src="./app.js"></script>
+</body>
+</html>
