@@ -1,75 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>THQ Booking Details</title>
-  <script type="module">
-    // Import Firebase SDKs
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-
-    // ✅ Live Firebase config from you
-    const firebaseConfig = {
-      apiKey: "AIzaSyDZTf5S-JFkyLk7rj72SNIyexPxHZnAEJU",
-      authDomain: "thqrides--bimi-branding.firebaseapp.com",
-      projectId: "thqrides--bimi-branding",
-      storageBucket: "thqrides--bimi-branding.firebasestorage.app",
-      messagingSenderId: "854332369699",
-      appId: "1:854332369699:web:d0110240fe5fa3e4e57a96"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    // Read params from QR URL
-    const queryParams = new URLSearchParams(window.location.search);
-    const bookingId = queryParams.get("bookingId");
-    const passengerId = queryParams.get("passengerId");
-
-    async function fetchBooking() {
-      if (!bookingId || !passengerId) {
-        document.getElementById("bookingDetails").innerHTML = "<p style='color:red'>Invalid QR Code.</p>";
-        return;
-      }
-
-      const docRef = doc(db, "bookings", bookingId);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        document.getElementById("passengerId").textContent = passengerId;
-        document.getElementById("pickup").textContent = data.pickup || "N/A";
-        document.getElementById("dropoff").textContent = data.dropoff || "N/A";
-        document.getElementById("seats").textContent = data.seats || "N/A";
-      } else {
-        document.getElementById("bookingDetails").innerHTML = "<p style='color:red'>Booking not found.</p>";
-      }
-    }
-
-    window.onload = fetchBooking;
-  </script>
   <style>
     body {
       background-color: black;
       color: white;
-      text-align: center;
       font-family: Arial, sans-serif;
+      text-align: center;
       padding-top: 50px;
     }
-    #bookingDetails {
-      margin-top: 30px;
+    .highlight {
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
   <h1>THQ Booking Details</h1>
-  <div id="bookingDetails">
-    <p><strong>Passenger ID:</strong> <span id="passengerId">Loading...</span></p>
-    <p><strong>Pickup:</strong> <span id="pickup">Loading...</span></p>
-    <p><strong>Drop-off:</strong> <span id="dropoff">Loading...</span></p>
-    <p><strong>Seats Booked:</strong> <span id="seats">Loading...</span></p>
-  </div>
+  <p><span class="highlight">Passenger ID:</span> <span id="passengerId">Loading...</span></p>
+  <p><span class="highlight">Pickup:</span> <span id="pickup">Loading...</span></p>
+  <p><span class="highlight">Drop-off:</span> <span id="dropoff">Loading...</span></p>
+  <p><span class="highlight">Seats Booked:</span> <span id="seats">Loading...</span></p>
+
+  <script type="module">
+    // Parse QR code data from the URL
+    const params = new URLSearchParams(window.location.search);
+    const bookingId = params.get("bookingId");
+    const passengerId = params.get("passengerId");
+  
+    // Display the passenger ID
+    document.getElementById("passengerId").textContent = passengerId || "null";
+  
+    // Firebase setup
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+  
+    const firebaseConfig = {
+      apiKey: "AIzaSyDZTf5S-JFkyLk7rj72SNIyexPxHZnAEJU",
+      authDomain: "thqrides--bimi-branding.firebaseapp.com",
+      projectId: "thqrides--bimi-branding",
+      storageBucket: "thqrides--bimi-branding.appspot.com",
+      messagingSenderId: "854332369699",
+      appId: "1:854332369699:web:d0110240fe5fa3e4e57a96"
+    };
+  
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+  
+    // Load booking details
+    if (bookingId && passengerId) {
+      const docRef = doc(db, "bookings", bookingId);
+      getDoc(docRef).then(docSnap => {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          document.getElementById("pickup").textContent = data.pickupPoint || "null";
+          document.getElementById("dropoff").textContent = data.dropoffPoint || "null";
+          document.getElementById("seats").textContent = data.seatsBooked || "null";
+        } else {
+          document.getElementById("pickup").textContent = "Booking not found";
+          document.getElementById("dropoff").textContent = "N/A";
+          document.getElementById("seats").textContent = "N/A";
+        }
+      });
+    }
+  </script>  
 </body>
 </html>
