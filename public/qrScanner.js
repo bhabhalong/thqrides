@@ -1,19 +1,20 @@
-// qrScanner.js
-import QrScanner from "./qr-scanner.min.js";
+import QrScanner from "./qr.js";
 
 const video = document.createElement("video");
 document.body.appendChild(video);
 
-const scanner = new QrScanner(video, result => {
-  try {
-    const data = JSON.parse(result.data || result);
-    const url = `booking.html?bookingId=${data.bookingId}&passengerId=${data.passengerId}`;
-    window.location.href = url;
-  } catch (e) {
-    alert("Invalid QR Code format");
-  }
-}, {
-  returnDetailedScanResult: true
+const qrScanner = new QrScanner(video, result => {
+    console.log("QR Code Detected:", result);
+    try {
+        const data = JSON.parse(result);
+        if (data.bookingId && data.passengerId) {
+            window.location.href = `booking.html?bookingId=${data.bookingId}&passengerId=${data.passengerId}`;
+        } else {
+            alert("Invalid QR code data.");
+        }
+    } catch (e) {
+        alert("QR code is not valid JSON.");
+    }
 });
 
-scanner.start();
+qrScanner.start();
