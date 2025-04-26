@@ -24,15 +24,10 @@
   <p><span class="highlight">Seats Booked:</span> <span id="seats">Loading...</span></p>
 
   <script type="module">
-    const params = new URLSearchParams(window.location.search);
-    const bookingId = params.get("bookingId");
-    const passengerId = params.get("passengerId");
-
-    document.getElementById("passengerId").textContent = passengerId || "null";
-
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyDZTf5S-JFkyLk7rj72SNIyexPxHZnAEJU",
       authDomain: "thqrides--bimi-branding.firebaseapp.com",
@@ -42,12 +37,20 @@
       appId: "1:854332369699:web:d0110240fe5fa3e4e57a96"
     };
 
+    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    // Extract bookingId and passengerId from URL
+    const params = new URLSearchParams(window.location.search);
+    const bookingId = params.get("bookingId");
+    const passengerId = params.get("passengerId");
+
     if (bookingId && passengerId) {
-      const docRef = doc(db, "bookings", bookingId);
-      getDoc(docRef).then(docSnap => {
+      document.getElementById("passengerId").textContent = passengerId;
+
+      const bookingRef = doc(db, "bookings", bookingId);
+      getDoc(bookingRef).then((docSnap) => {
         if (docSnap.exists()) {
           const data = docSnap.data();
           document.getElementById("pickup").textContent = data.pickupPoint || "null";
@@ -58,7 +61,13 @@
           document.getElementById("dropoff").textContent = "N/A";
           document.getElementById("seats").textContent = "N/A";
         }
+      }).catch((error) => {
+        console.error("Error fetching booking:", error);
       });
+    } else {
+      document.getElementById("pickup").textContent = "Missing info";
+      document.getElementById("dropoff").textContent = "Missing info";
+      document.getElementById("seats").textContent = "Missing info";
     }
   </script>
 </body>
