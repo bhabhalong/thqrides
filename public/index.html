@@ -2,48 +2,86 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>THQ Rides</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body style="background-color: black; color: white; text-align: center; font-family: sans-serif;">
+<body>
   <h1>Welcome to THQ Rides</h1>
-  <div id="app">
-    <button onclick="loginUser()">Login</button>
+  <div>
+    <button onclick="window.location.href='scanner.html'">Login</button>
   </div>
 
-  <!-- Booking Form -->
-  <form id="bookingForm" style="margin-top: 30px;">
-    <h3>Book a Ride</h3>
-    <input type="text" id="passengerId" placeholder="Passenger ID (e.g. 7NHJDR...)" required><br><br>
-    <input type="text" id="pickup" placeholder="Pickup Point (e.g. Sandton)" required><br><br>
-    <input type="text" id="dropoff" placeholder="Drop-off Point (e.g. Rosebank)" required><br><br>
-    <input type="number" id="seats" placeholder="Seats to book (e.g. 2)" required><br><br>
-    <button type="submit">Book Ride</button>
-  </form>
+  <h2>Book a Ride</h2>
+  <input type="text" id="passengerId" placeholder="Passenger ID (e.g. 7NHJDR)" />
+  <input type="text" id="pickup" placeholder="Pickup Point (e.g. Sandton)" />
+  <input type="text" id="dropoff" placeholder="Drop-off Point (e.g. Rosebank)" />
+  <input type="number" id="seats" placeholder="Seats to book (e.g. 2)" />
+  <button onclick="bookRide()">Book Ride</button>
 
-  <!-- Passenger Booking Lookup -->
-  <div style="margin-top: 30px;">
-    <input type="text" id="viewPassengerId" placeholder="Enter your Passenger ID to view bookings" />
-    <button id="viewBookingsBtn">View My Bookings</button>
-  </div>
+  <h3>View Your Bookings</h3>
+  <input type="text" id="viewPassengerId" placeholder="Enter your Passenger ID to view bookings" />
+  <button onclick="viewBookings()">View My Bookings</button>
 
-  <!-- QR Code Display -->
-  <div id="qrDisplay" style="margin-top: 40px;">
-    <h4>Booking QR Code:</h4>
-  </div>
+  <div id="qrcode"></div>
 
-  <!-- Booking List Output -->
-  <div id="bookingsList" style="margin-top: 30px;"></div>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import QRCode from "https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js";
 
-  <!-- Firebase JS SDK -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDZTf5S-JFkyLk7rj72SNIyexPxHZnAEJU",
+      authDomain: "thqrides--bimi-branding.firebaseapp.com",
+      projectId: "thqrides--bimi-branding",
+      storageBucket: "thqrides--bimi-branding.appspot.com",
+      messagingSenderId: "854332369699",
+      appId: "1:854332369699:web:d0110240fe5fa3e4e57a96"
+    };
 
-  <!-- QR Code Library -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-  <!-- App Script (must be loaded last) -->
-  <script src="./app.js"></script>
+    async function bookRide() {
+      const passengerId = document.getElementById("passengerId").value;
+      const pickup = document.getElementById("pickup").value;
+      const dropoff = document.getElementById("dropoff").value;
+      const seats = parseInt(document.getElementById("seats").value, 10);
+
+      if (!passengerId || !pickup || !dropoff || !seats) {
+        alert("Please fill in all fields");
+        return;
+      }
+
+      const docRef = await addDoc(collection(db, "bookings"), {
+        passengerId,
+        pickupPoint: pickup,
+        dropoffPoint: dropoff,
+        seatsBooked: seats,
+        createdAt: new Date().toISOString(),
+        status: "pending",
+        driverId: "user-01",
+        price: seats * 12
+      });
+
+      const data = {
+        bookingId: docRef.id,
+        passengerId
+      };
+
+      QRCode.toCanvas(document.getElementById("qrcode"), JSON.stringify(data), function (error) {
+        if (error) console.error(error);
+        else console.log("QR Code generated");
+      });
+    }
+
+    function viewBookings() {
+      const passengerId = document.getElementById("viewPassengerId").value;
+      if (!passengerId) {
+        alert("Enter your Passenger ID");
+        return;
+      }
+      window.location.href = `scanner.html`; // or a dedicated viewer if needed
+    }
+  </script>
 </body>
 </html>
