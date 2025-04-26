@@ -24,18 +24,15 @@
   <p><span class="highlight">Seats Booked:</span> <span id="seats">Loading...</span></p>
 
   <script type="module">
-    // Parse QR code data from the URL
     const params = new URLSearchParams(window.location.search);
     const bookingId = params.get("bookingId");
     const passengerId = params.get("passengerId");
-  
-    // Display the passenger ID
+
     document.getElementById("passengerId").textContent = passengerId || "null";
-  
-    // Firebase setup
+
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-  
+
     const firebaseConfig = {
       apiKey: "AIzaSyDZTf5S-JFkyLk7rj72SNIyexPxHZnAEJU",
       authDomain: "thqrides--bimi-branding.firebaseapp.com",
@@ -44,11 +41,10 @@
       messagingSenderId: "854332369699",
       appId: "1:854332369699:web:d0110240fe5fa3e4e57a96"
     };
-  
+
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-  
-    // Load booking details
+
     if (bookingId && passengerId) {
       const docRef = doc(db, "bookings", bookingId);
       getDoc(docRef).then(docSnap => {
@@ -64,6 +60,6 @@
         }
       });
     }
-  </script>  
+  </script>
 </body>
 </html>
